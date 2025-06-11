@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forecast 5 Hari</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/soft-ui-design-system@1.0.0/css/soft-ui.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='dark-mode-handler.js') }}" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="container py-5">
+        <a href="/" class="btn btn-outline-secondary mb-3">← Kembali</a>
+        <form method="POST" class="input-group mb-4">
+            <input type="text" name="city" class="form-control form-control-lg border-radius-xl" placeholder="Kota, e.g. Bandung,ID" required>
+            <button class="btn btn-primary btn-lg border-radius-xl">Forecast</button>
+        </form>
+        {% if data %} {% if data.error %}
+        <div class="alert alert-warning">{{ data.error }}</div>
+        {% else %}
+        <canvas id="chart" height="150"></canvas>
+        <div class="row mt-4">
+            {% for d in data %}
+            <div class="col-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <p>{{ d.dt.split(' ')[0] }}</p>
+                        <img src="http://openweathermap.org/img/wn/{{ d.icon }}.png">
+                        <p>{{ d.temp }}°C</p>
+                        <p>{{ d.desc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %} {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        { %
+            if data and not data.error %
+        }
+        const labels = {
+            {
+                data | map(attribute = 'dt') | list | tojson
+            }
+        };
+        const temps = {
+            {
+                data | map(attribute = 'temp') | list | tojson
+            }
+        };
+        new Chart(document.getElementById('chart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Suhu (°C)',
+                    data: temps,
+                    borderColor: '#3A8FDE',
+                    backgroundColor: 'rgba(58,143,222,0.2)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: document.body.classList.contains('dark-mode') ? '#fff' : '#000'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: document.body.classList.contains('dark-mode') ? '#fff' : '#000'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: document.body.classList.contains('dark-mode') ? '#fff' : '#000'
+                        }
+                    }
+                }
+            }
+        }); { % endif %
+        }
+    </script>
+</body>
+
+</html>

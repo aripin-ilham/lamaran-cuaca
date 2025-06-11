@@ -1,0 +1,15 @@
+body.dark-mode {
+    background-color: #121212!important;
+    color: #e0e0e0!important;
+}
+
+body.dark-mode .card {
+    background: #1e1e1e;
+}
+
+body.dark-mode .navbar,
+.list-group-item,
+.alert {
+    background: #2c2c2c!important;
+    color: #e0e0e0!important;
+}
